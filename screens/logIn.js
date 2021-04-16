@@ -18,16 +18,66 @@ export default class LogIn extends Component {
             return Alert.alert(errorMessage)
         })
     }
-    signUp=(email,password)=>{
-        firebase.auth().signInWithEmailAndPassword(email,password).then((response)=>{
-            return Alert.alert("User Added Successfully");
-        })
-        .catch(function(error){
-            var errorCode=error.code;
-            var errorMessage=error.message;
-            return Alert.alert(errorMessage)
-        })
+    signUp=(email,password,confirmPassword)=>{
+        if(password!=confirmPassword){
+            return Alert.alert("Password does not match")
+        } else{
+            firebase.auth().signInWithEmailAndPassword(email,password).then(()=>{
+                db.collection('users').add({
+                    'firstName':this.state.firstName,
+                     'LastName':this.state.LastName,
+                     'contact':this.state.contact,
+                     'email':this.state.email,
+                     'adress':this.state.adress
+                })
+                return Alert.alert("User Added Successfully",'',[{text:'okay',onPress:()=>({isModelVisible:false})}]);
+            })
+            .catch(function(error){
+                var errorCode=error.code;
+                var errorMessage=error.message;
+                return Alert.alert(errorMessage)
+            }) 
+        }
     }
+    showModal=()=>{
+        return(
+            <Modal animationType="fade" transparent={true} visible={this.state.isModelVisible}>
+                <View style={styles.modalContainer}>
+                    <ScrollView style={{width:'100%'}}>
+                        <KeyboardAvoidingView style={styles.keyView}>
+                            <Text style={styles.modalTitle}>
+                                Registration
+                            </Text>
+                            <TextInput style={styles.ti} placeholder={"first name"} maxLength={10}
+                             onChangeText={(text)=>{this.setState({firstName:text})}}></TextInput>
+                            <TextInput style={styles.ti} placeholder={"last name"} maxLength={10}
+                             onChangeText={(text)=>{this.setState({LastName:text})}}></TextInput>
+                            <TextInput style={styles.ti} placeholder={"contact"} maxLength={10}
+                             onChangeText={(text)=>{this.setState({contact:text})}}></TextInput>
+                            <TextInput style={styles.ti} placeholder={"adress"} multiline={true}
+                             onChangeText={(text)=>{this.setState({adress:text})}}></TextInput>
+                            <TextInput style={styles.ti} placeholder={"email"} keyboardType={'email-address'}
+                             onChangeText={(text)=>{this.setState({email:text})}}></TextInput>           
+                            <TextInput style={styles.ti} placeholder={"password"} secureTextEntry={true}
+                             onChangeText={(text)=>{this.setState({password:text})}}></TextInput>  
+                            <TextInput style={styles.ti} placeholder={"confirmPassword"} secureTextEntry={true}
+                             onChangeText={(text)=>{this.setState({confirmPassword:text})}}></TextInput>           
+                            <View>
+                                <TouchableOpacity style={styles.rb}
+                                onPress={()=>{this.signUp(this.state.email,this.state.password,this.state.confirmPassword)}}>
+                                    <Text style={styles.buttonText}>register</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.rb}
+                                onPress={()=>{this.setState({isModelVisible:false})}}>
+                                    <Text style={styles.buttonText} >cancel button</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </KeyboardAvoidingView>
+                    </ScrollView>
+                </View>
+            </Modal>
+        )
+        }
     render(){
         return(
             <View style={styles.container}>
@@ -89,5 +139,38 @@ const styles=StyleSheet.create({
         fontWeight:'200',
         fontSize:20,
     },
-    buttonContainer:{alignItems:'center',flex:1}
+    buttonContainer:{alignItems:'center',flex:1},
+    keyView:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    modalTitle:{justifyContent:'center',alignSelf:'center',fontSize:30,color:'#ff5722',margin:50},
+    modalContainer:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'white',
+        marginRight:30,
+        marginLeft:30,
+        marginTop:80,
+        marginBottom:80
+    },
+    ti:{
+        width:'75%',
+        height:35,
+        alignSelf:'center',
+        borderRadius:10,
+        marginTop:20,
+        padding:10
+    },
+    rb:{
+        width:200,
+        height:40,
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:10,
+        marginTop:30
+    },
+    
 })
