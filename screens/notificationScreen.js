@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, FlatList,Text } from 'react-native';
 import { ListItem, Icon } from 'react-native-elements';
 import firebase from 'firebase';
-import MyHeader from '../components/MyHeader';
+import MyHeader from '../components/myHeader';
 
 import db from '../config';
 
@@ -40,11 +40,11 @@ export default class NotificationScreen extends Component{
   }
 
   componentWillUnmount(){
-    this.notificationRef()
+    this.notificationRef=null;
   }
 
   keyExtractor = (item, index) => index.toString()
-
+/*
   renderItem = ({item,index}) =>{
       return (
         <ListItem
@@ -57,6 +57,22 @@ export default class NotificationScreen extends Component{
         />
       )
  }
+
+ */
+ renderItem=({item,i})=>{
+    return(
+        <View style={{borderBottomWidth:2,flexDirection:'row'}}>
+            <View>
+                <Text style={{ color: 'black', fontWeight: 'bold' }}>
+                    {item.book_name}
+                </Text>
+                <Text>
+                {item.message}
+                </Text>
+            </View>
+        </View>
+    )
+}
 
 
   render(){
